@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.12.20
+# v0.14.2
 
 using Markdown
 using InteractiveUtils
@@ -13,13 +13,35 @@ macro bind(def, element)
     end
 end
 
+# ╔═╡ 851c03a4-e7a4-11ea-1652-d59b7a6599f0
+# setting up an empty package environment
+begin
+	import Pkg
+	Pkg.activate(mktempdir())
+	Pkg.Registry.update()
+end
+
+# ╔═╡ d6ee91ea-e750-11ea-1260-31ebf3ec6a9b
+# add (ie install) a package to our environment
+begin
+	Pkg.add("Compose")
+	# call `using` so that we can use it in our code
+	using Compose
+end
+
+# ╔═╡ 5acd58e0-e856-11ea-2d3d-8329889fe16f
+begin
+	Pkg.add("PlutoUI")
+	using PlutoUI
+end
+
 # ╔═╡ fafae38e-e852-11ea-1208-732b4744e4c2
 md"_Homework 0, version 3 -- Spring 2021_"
 
 # ╔═╡ 7308bc54-e6cd-11ea-0eab-83f7535edf25
 # edit the code below to set your name and kerberos ID (i.e. email without @mit.edu)
 
-student = (name = "Jazzy Doe", kerberos_id = "jazz")
+student = (name = "icweaver", kerberos_id = "hahvard")
 
 # press the ▶ button in the bottom right of this cell to run your edits
 # or use Shift+Enter
@@ -85,7 +107,7 @@ Output: $x^2$
 
 # ╔═╡ e02f7ea6-7024-11eb-3672-fd59a6cff79b
 function basic_square(x)
-	return 1 # this is wrong, write your code here!
+	return x^2
 end
 
 # ╔═╡ 6acef56c-7025-11eb-2524-819c30a75d39
@@ -155,11 +177,16 @@ This is because the square root must be between the numbers `x/a` and `a`. Why?
 
 # ╔═╡ bccf0e88-e754-11ea-3ab8-0170c2d44628
 ex_1_1 = md"""
-your answer here
-""" 
+As the distance between ``x/a`` and ``a`` goes to zero:
 
-# you might need to wait until all other cells in this notebook have completed running. 
-# scroll down the page to see what's up
+```math
+x /a = a \quad\Longrightarrow\quad
+x = a^2 \quad\Longrightarrow\quad
+\boxed{\sqrt x = a}\quad.
+```
+
+So for any ``a > 0``, the results will always converge to ``\sqrt x``.
+"""
 
 # ╔═╡ e7abd366-e7a6-11ea-30d7-1b6194614d0a
 if !(@isdefined ex_1_1)
@@ -172,8 +199,11 @@ md"### Exercise 1.2
 Write a function newton_sqrt(x) which implements the above algorithm."
 
 # ╔═╡ 4896bf0c-e754-11ea-19dc-1380bb356ab6
-function newton_sqrt(x, error_margin=0.01, a=x / 2) # a=x/2 is the default value of `a`
-	return x # this is wrong, write your code here!
+function newton_sqrt(x, error_margin=0.01, a=x/2) 
+	while abs(x/a - a) > error_margin
+		a = (x/a + a) / 2.0
+	end
+	return a
 end
 
 # ╔═╡ 7a01a508-e78a-11ea-11da-999d38785348
@@ -230,28 +260,6 @@ md"To draw Sierpinski's triangle, we are going to use an external package, [_Com
 A package contains a coherent set of functionality that you can often use a black box according to its specification. There are [lots of Julia packages](https://juliahub.com/ui/Home).
 "
 
-# ╔═╡ 851c03a4-e7a4-11ea-1652-d59b7a6599f0
-# setting up an empty package environment
-begin
-	import Pkg
-	Pkg.activate(mktempdir())
-	Pkg.Registry.update()
-end
-
-# ╔═╡ d6ee91ea-e750-11ea-1260-31ebf3ec6a9b
-# add (ie install) a package to our environment
-begin
-	Pkg.add("Compose")
-	# call `using` so that we can use it in our code
-	using Compose
-end
-
-# ╔═╡ 5acd58e0-e856-11ea-2d3d-8329889fe16f
-begin
-	Pkg.add("PlutoUI")
-	using PlutoUI
-end
-
 # ╔═╡ dbc4da6a-e7b4-11ea-3b70-6f2abfcab992
 md"Just like the definition above, our `sierpinksi` function is _recursive_: it calls itself."
 
@@ -289,9 +297,7 @@ area_sierpinski(1) = 0.??
 """
 
 # ╔═╡ ca8d2f72-e7b6-11ea-1893-f1e6d0a20dc7
-function area_sierpinski(n)
-	return 1.0
-end
+area_sierpinski(n) = (3/4)^n
 
 # ╔═╡ 71c78614-e7bc-11ea-0959-c7a91a10d481
 if area_sierpinski(0) == 1.0 && area_sierpinski(1) == 3 / 4
@@ -369,7 +375,7 @@ has area **$(area_sierpinski(n))**
 # ╔═╡ Cell order:
 # ╟─fafae38e-e852-11ea-1208-732b4744e4c2
 # ╟─cdff6730-e785-11ea-2546-4969521b33a7
-# ╠═7308bc54-e6cd-11ea-0eab-83f7535edf25
+# ╟─7308bc54-e6cd-11ea-0eab-83f7535edf25
 # ╟─a2181260-e6cd-11ea-2a69-8d9d31d1ef0e
 # ╟─31a8fbf8-e6ce-11ea-2c66-4b4d02b41995
 # ╟─f9d7250a-706f-11eb-104d-3f07c59f7174
@@ -381,12 +387,12 @@ has area **$(area_sierpinski(n))**
 # ╟─b3c7a050-e855-11ea-3a22-3f514da746a4
 # ╟─339c2d5c-e6ce-11ea-32f9-714b3628909c
 # ╟─56866718-e6ce-11ea-0804-d108af4e5653
-# ╠═bccf0e88-e754-11ea-3ab8-0170c2d44628
+# ╟─bccf0e88-e754-11ea-3ab8-0170c2d44628
 # ╟─e7abd366-e7a6-11ea-30d7-1b6194614d0a
 # ╟─d62f223c-e754-11ea-2470-e72a605a9d7e
 # ╠═4896bf0c-e754-11ea-19dc-1380bb356ab6
 # ╠═7a01a508-e78a-11ea-11da-999d38785348
-# ╟─682db9f8-e7b1-11ea-3949-6b683ca8b47b
+# ╠═682db9f8-e7b1-11ea-3949-6b683ca8b47b
 # ╟─088cc652-e7a8-11ea-0ca7-f744f6f3afdd
 # ╟─c18dce7a-e7a7-11ea-0a1a-f944d46754e5
 # ╟─5e24d95c-e6ce-11ea-24be-bb19e1e14657
