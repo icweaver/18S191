@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.12.21
+# v0.14.5
 
 using Markdown
 using InteractiveUtils
@@ -13,26 +13,32 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ 29dfe3d6-c353-4081-8192-b12f374bf702
-filter!(LOAD_PATH) do path
-	path != "@v#.#"
-end;
-
 # ╔═╡ 65780f00-ed6b-11ea-1ecf-8b35523a7ac0
 begin
 	import Pkg
 	Pkg.activate(mktempdir())
 	Pkg.add([
-			Pkg.PackageSpec(name="Images", version="0.22.4"), 
-			Pkg.PackageSpec(name="ImageMagick", version="0.7"), 
-			Pkg.PackageSpec(name="PlutoUI", version="0.7"), 
-			Pkg.PackageSpec(name="HypertextLiteral", version="0.5")
+			Pkg.PackageSpec(name="Images"), 
+			Pkg.PackageSpec(name="ImageMagick"), 
+			Pkg.PackageSpec(name="PlutoUI"), 
+			Pkg.PackageSpec(name="HypertextLiteral")
 			])
 
 	using Images
 	using PlutoUI
 	using HypertextLiteral
 end
+
+# ╔═╡ f26f32a2-e09c-4767-925c-e7c84b34d4b4
+Pkg.add("BenchmarkTools")
+
+# ╔═╡ 29dfe3d6-c353-4081-8192-b12f374bf702
+filter!(LOAD_PATH) do path
+	path != "@v#.#"
+end;
+
+# ╔═╡ 7bf0d764-6b1a-42c6-b1c1-a316df3c56c4
+using BenchmarkTools
 
 # ╔═╡ ac8ff080-ed61-11ea-3650-d9df06123e1f
 md"""
@@ -52,7 +58,7 @@ Feel free to ask questions!
 # ╔═╡ 911ccbce-ed68-11ea-3606-0384e7580d7c
 # edit the code below to set your name and kerberos ID (i.e. email without @mit.edu)
 
-student = (name = "Jazzy Doe", kerberos_id = "jazz")
+student = (name = "Ian", kerberos_id = "hahvahd@mit.edu")
 
 # press the ▶ button in the bottom right of this cell to run your edits
 # or use Shift+Enter
@@ -92,7 +98,7 @@ $(html"<br>")
 """
 
 # ╔═╡ f51333a6-eded-11ea-34e6-bfbb3a69bcb0
-random_vect = missing # replace `missing` with your code!
+random_vect = rand(10)
 
 # ╔═╡ 5da8cbe8-eded-11ea-2e43-c5b7cc71e133
 begin
@@ -112,8 +118,11 @@ md"#### Exerise 1.2
 
 # ╔═╡ bd907ee1-5253-4cae-b5a5-267dac24362a
 function my_sum(xs)
-	# your code here!
-	return missing
+	tot = 0
+	for x ∈ xs
+		tot += x
+	end
+	return tot
 end
 
 # ╔═╡ 6640110a-d171-4b32-8d12-26979a36b718
@@ -125,8 +134,7 @@ md"#### Exerise 1.3
 
 # ╔═╡ 0ffa8354-edee-11ea-2883-9d5bfea4a236
 function mean(xs)
-	# your code here!
-	return missing
+	return my_sum(xs) / length(xs)
 end
 
 # ╔═╡ 1f104ce4-ee0e-11ea-2029-1d9c817175af
@@ -136,7 +144,7 @@ mean([1, 2, 3])
 md"👉 Define `m` to be the mean of `random_vect`."
 
 # ╔═╡ 2a391708-edee-11ea-124e-d14698171b68
-m = missing # replace `missing` with your code!
+m = mean(random_vect)
 
 # ╔═╡ e2863d4c-edef-11ea-1d67-332ddca03cc4
 md"""#### Exerise 1.4
@@ -161,8 +169,7 @@ md"""
 
 # ╔═╡ ec5efe8c-edef-11ea-2c6f-afaaeb5bc50c
 function demean(xs)
-	# your code here!
-	return missing
+	return xs .- mean(xs)
 end
 
 # ╔═╡ d6ddafdd-1a44-48c7-b49a-554073cdf331
@@ -202,8 +209,9 @@ md"""
 
 # ╔═╡ b6b65b94-edf0-11ea-3686-fbff0ff53d08
 function create_bar()
-	# your code here!
-	return missing
+	bar = zeros(100)
+	bar[40:60] .= 1
+	bar
 end
 
 # ╔═╡ 4a5e9d2c-dd90-4bb0-9e31-3f5c834406b4
@@ -270,8 +278,7 @@ md"""
 
 # ╔═╡ a8b2270a-600c-4f83-939e-dc5ab35f4735
 function get_red(pixel::AbstractRGB)
-	# your code here!
-	return missing
+	pixel.r
 end
 
 # ╔═╡ c320b39d-4cea-4fa1-b1ce-053c898a67a6
@@ -285,8 +292,7 @@ md"""
 
 # ╔═╡ ebe1d05c-f6aa-437d-83cb-df0ba30f20bf
 function get_reds(image::AbstractMatrix)
-	# your code here!
-	return missing
+	get_red.(image)
 end
 
 # ╔═╡ c427554a-6f6a-43f1-b03b-f83239887cee
@@ -322,7 +328,7 @@ Use the ➕ button at the bottom left of this cell to add more cells.
 """
 
 # ╔═╡ 21ba6e75-55a2-4614-9b5d-ea6378bf1d98
-
+get_reds(philip_head) .|> value_as_color
 
 # ╔═╡ f7825c18-ff28-4e23-bf26-cc64f2f5049a
 md"""
@@ -331,8 +337,17 @@ md"""
 👉 Write four more functions, `get_green`, `get_greens`, `get_blue` and `get_blues`, to be the equivalents of `get_red` and `get_reds`. Use the ➕ button at the bottom left of this cell to add new cells.
 """
 
-# ╔═╡ d994e178-78fd-46ab-a1bc-a31485423cad
+# ╔═╡ 42ee56ec-34a2-4165-9a6f-80a16d6ca98f
+get_green(pixel) = pixel.g
 
+# ╔═╡ 1cc364ae-b5dd-4eb4-8c63-2a920e7f5371
+get_greens(image::AbstractMatrix) = get_green.(image)
+
+# ╔═╡ aca2b0bb-6b92-4eba-8764-403ca44da40b
+get_blue(pixel) = pixel.b
+
+# ╔═╡ 66888a22-bd52-4a92-8c16-7a89b514962a
+get_blues(image::AbstractMatrix) = get_blue.(image)
 
 # ╔═╡ c54ccdea-ee05-11ea-0365-23aaf053b7d7
 md"""
@@ -342,8 +357,8 @@ md"""
 
 # ╔═╡ f6898df6-ee07-11ea-2838-fde9bc739c11
 function mean_color(image)
-	# your code here!
-	return missing
+	r, g, b = mean.((get_reds(image), get_greens(image), get_blues(image)))
+	return RGB(r, g, b)
 end
 
 # ╔═╡ 5be9b144-ee0d-11ea-2a8d-8775de265a1d
@@ -356,8 +371,8 @@ _At the end of this homework, you can see all of your filters applied to your we
 
 # ╔═╡ 63e8d636-ee0b-11ea-173d-bd3327347d55
 function invert(color::AbstractRGB)
-	# your code here!
-	return missing
+	o = one(color.r)
+	return RGB(o - color.r, o - color.g, o - color.b)
 end
 
 # ╔═╡ 2cc2f84e-ee0d-11ea-373b-e7ad3204bb00
@@ -379,7 +394,7 @@ invert(color_red)
 md"👉 Can you invert the picture of Philip?"
 
 # ╔═╡ 943103e2-ee0b-11ea-33aa-75a8a1529931
-philip_inverted = missing # replace `missing` with your code!
+philip_inverted = invert.(philip_head)
 
 # ╔═╡ 55b138b7-19fb-4da1-9eb1-1e8304528251
 md"""
@@ -394,8 +409,7 @@ md"""
 
 # ╔═╡ fbd1638d-8d7a-4d12-aff9-9c160cc3fd74
 function quantize(x::Number)
-	# your code here!
-	return missing
+	floor(x, digits=1)
 end
 
 # ╔═╡ 7720740e-2d2b-47f7-98fd-500ed3eee479
@@ -449,8 +463,8 @@ The method you write should return a new `RGB` object, in which each component (
 
 # ╔═╡ 04e6b486-ceb7-45fe-a6ca-733703f16357
 function quantize(color::AbstractRGB)
-	# your code here!
-	return missing
+	r, g, b = color.r, color.g, color.b
+	return RGB(quantize.((r, g, b))...)
 end
 
 # ╔═╡ f6bf64da-ee07-11ea-3efb-05af01b14f67
@@ -461,8 +475,7 @@ md"""
 
 # ╔═╡ 13e9ec8d-f615-4833-b1cf-0153010ccb65
 function quantize(image::AbstractMatrix)
-	# your code here!
-	return missing
+	return quantize.(image)
 end
 
 # ╔═╡ f6a655f8-ee07-11ea-13b6-43ca404ddfc7
@@ -482,8 +495,7 @@ md"""
 
 # ╔═╡ f38b198d-39cf-456f-a841-1ba08f206010
 function noisify(x::Number, s)
-	# your code here!
-	return missing
+	return clamp(x + rand(-s:0.01:s), 0, 1)
 end
 
 # ╔═╡ f6fc1312-ee07-11ea-39a0-299b67aee3d8
@@ -495,8 +507,7 @@ Use your previous method for `noisify`. _(Remember that Julia chooses which meth
 
 # ╔═╡ db4bad9f-df1c-4640-bb34-dd2fe9bdce18
 function noisify(color::AbstractRGB, s)
-	# your code here!
-	return missing
+	return RGB(noisify.((color.r, color.g, color.b), s)...)
 end
 
 # ╔═╡ 0000b7f8-4c43-4dd8-8665-0dfe59e74c0a
@@ -529,12 +540,11 @@ md"""
 
 # ╔═╡ 21a5885d-00ab-428b-96c3-c28c98c4ca6d
 function noisify(image::AbstractMatrix, s)
-	# your code here!
-	return missing
+	noisify.(image, s)
 end
 
 # ╔═╡ 1ea53f41-b791-40e2-a0f8-04e13d856829
-noisify(0.5, 0.1) # edit this test case!
+noisify(0.5, 0) # edit this test case!
 
 # ╔═╡ 7e4aeb70-ee1b-11ea-100f-1952ba66f80f
 (original=color_red, with_noise=noisify(color_red, color_noise))
@@ -555,7 +565,7 @@ Move the slider below to set the amount of noise applied to the image of Philip.
 """
 
 # ╔═╡ e70a84d4-ee0c-11ea-0640-bf78653ba102
-@bind philip_noise Slider(0:0.01:1, show_value=true)
+@bind philip_noise Slider(0:0.01:50, show_value=true)
 
 # ╔═╡ ac15e0d0-ee0c-11ea-1eaf-d7f88b5df1d7
 noisify(philip_head, philip_noise)
@@ -581,7 +591,7 @@ You may need noise intensities larger than 1. Why?
 
 # ╔═╡ bdc2df7c-ee0c-11ea-2e9f-7d2c085617c1
 answer_about_noise_intensity = md"""
-The image is unrecognisable with intensity ...
+idk, brains are weird
 """
 
 # ╔═╡ e87e0d14-43a5-490d-84d9-b14ece472061
@@ -591,15 +601,11 @@ md"""
 
 # ╔═╡ ee5f21fb-1076-42b6-8926-8bbb6ed0ad67
 function custom_filter(pixel::AbstractRGB)
-	
-	# your code here!
-	
-	return pixel
+	pixel |> invert |> quantize |> x -> noisify(x, 1.2)
 end
 
 # ╔═╡ 9e5a08dd-332a-486b-94ab-15c49e72e522
 function custom_filter(image::AbstractMatrix)
-	
 	return custom_filter.(image)
 end
 
@@ -1273,7 +1279,7 @@ md"_homework 1, version 7_"
 # ╔═╡ Cell order:
 # ╟─8ef13896-ed68-11ea-160b-3550eeabbd7d
 # ╟─ac8ff080-ed61-11ea-3650-d9df06123e1f
-# ╠═911ccbce-ed68-11ea-3606-0384e7580d7c
+# ╟─911ccbce-ed68-11ea-3606-0384e7580d7c
 # ╟─5f95e01a-ee0a-11ea-030c-9dba276aba92
 # ╠═65780f00-ed6b-11ea-1ecf-8b35523a7ac0
 # ╟─29dfe3d6-c353-4081-8192-b12f374bf702
@@ -1284,7 +1290,7 @@ md"_homework 1, version 7_"
 # ╟─ad6a33b0-eded-11ea-324c-cfabfd658b56
 # ╠═f51333a6-eded-11ea-34e6-bfbb3a69bcb0
 # ╟─b18e2c54-edf1-11ea-0cbf-85946d64b6a2
-# ╠═397941fc-edee-11ea-33f2-5d46c759fbf7
+# ╟─397941fc-edee-11ea-33f2-5d46c759fbf7
 # ╟─b1d5ca28-edf6-11ea-269e-75a9fb549f1d
 # ╟─5da8cbe8-eded-11ea-2e43-c5b7cc71e133
 # ╟─77adb065-bfd4-4680-9c2a-ad4d92689dbf
@@ -1343,10 +1349,15 @@ md"_homework 1, version 7_"
 # ╟─3f1a670b-44c2-4cab-909c-65f4ae9ed14b
 # ╠═21ba6e75-55a2-4614-9b5d-ea6378bf1d98
 # ╟─f7825c18-ff28-4e23-bf26-cc64f2f5049a
-# ╠═d994e178-78fd-46ab-a1bc-a31485423cad
+# ╠═42ee56ec-34a2-4165-9a6f-80a16d6ca98f
+# ╠═1cc364ae-b5dd-4eb4-8c63-2a920e7f5371
+# ╠═aca2b0bb-6b92-4eba-8764-403ca44da40b
+# ╠═66888a22-bd52-4a92-8c16-7a89b514962a
 # ╟─c54ccdea-ee05-11ea-0365-23aaf053b7d7
 # ╠═f6898df6-ee07-11ea-2838-fde9bc739c11
 # ╠═5be9b144-ee0d-11ea-2a8d-8775de265a1d
+# ╠═7bf0d764-6b1a-42c6-b1c1-a316df3c56c4
+# ╠═f26f32a2-e09c-4767-925c-e7c84b34d4b4
 # ╟─4d0158d0-ee0d-11ea-17c3-c169d4284acb
 # ╟─5f6635b4-63ed-4a62-969c-bd4084a8202f
 # ╟─f6cc03a0-ee07-11ea-17d8-013991514d42
@@ -1397,7 +1408,7 @@ md"_homework 1, version 7_"
 # ╠═ac15e0d0-ee0c-11ea-1eaf-d7f88b5df1d7
 # ╟─9604bc44-ee1b-11ea-28f8-7f7af8d0cbb2
 # ╟─f714699e-ee07-11ea-08b6-5f5169861b57
-# ╠═bdc2df7c-ee0c-11ea-2e9f-7d2c085617c1
+# ╟─bdc2df7c-ee0c-11ea-2e9f-7d2c085617c1
 # ╟─4139ee66-ee0a-11ea-2282-15d63bcca8b8
 # ╠═20402780-426b-4caa-af8f-ff1e7787b7f9
 # ╟─ed9fb2ac-2680-42b7-9b00-591e45a5e105
